@@ -1,18 +1,14 @@
 # data = open('simple.txt', 'r').read().split('\n\n')
 data = open('input.txt', 'r').read().split('\n\n')
-
 drawings = [int(i) for i in data[0].split(',')]
 
-boards = []
-for i in data[1:]:
-    board = i.split('\n')
-    for j in range(len(board)):
-        row = []
-        for k in board[j].split(' '):
-            if k != '':
-                row.append(int(k))
-        board[j] = row
-    boards.append(board)
+
+def parseBoard(board):
+    # Parse the board into a list of lists
+    return [[int(i) for i in row.split(' ') if i != ''] for row in board.split('\n')]
+
+
+boards = [parseBoard(board) for board in data[1:]]
 
 
 def generateWinConditions(board, drawings):
@@ -39,29 +35,26 @@ def getEarliestWin(board):
     return min([max([drawings.index(i) for i in condition]) for condition in conditions])
 
 
-def getResult(winner, drawIndex):
+def getResult(board, drawIndex):
     # Forumla is sum of all non-called numbers * last called number
+    called = set(drawings[:drawIndex+1])
     total = 0
-    for i in boards[winner]:
-        for j in i:
-            if j not in drawings[:drawIndex+1]:
-                total += j
+
+    for row in board:
+        for i in row:
+            if i not in called:
+                total += i
 
     return total * drawings[drawIndex]
 
 
 def part1():
-    m = len(drawings)
-    winner = -1
-
     # Find the board that wins the earliest
-    for i, board in enumerate(boards):
-        earliestWin = getEarliestWin(board)
-        if earliestWin < m:
-            m = earliestWin
-            winner = i
+    winOrders = [getEarliestWin(board) for board in boards]
+    m = min(winOrders)
+    winner = winOrders.index(m)
 
-    return getResult(winner, m)
+    return getResult(boards[winner], m)
 
 
 def part2():
@@ -70,7 +63,7 @@ def part2():
     m = max(winOrders)
     winner = winOrders.index(m)
 
-    return getResult(winner, m)
+    return getResult(boards[winner], m)
 
 
 print(part1())
