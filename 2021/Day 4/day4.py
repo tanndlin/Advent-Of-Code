@@ -1,3 +1,5 @@
+import time
+
 # data = open('simple.txt', 'r').read().split('\n\n')
 data = open('input.txt', 'r').read().split('\n\n')
 
@@ -71,5 +73,7 @@ def part2():
     return getResult(boards[haveWon.index(False)], drawings[:drawIndex+1])
 
 
+start_time = time.time()
 print(part1())
 print(part2())
+print("--- %s seconds ---" % (time.time() - start_time))
